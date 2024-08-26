@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
+import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
+import 'package:health_link_admin/model/menu_item.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
   runApp(const MyApp());
 }
 
@@ -15,15 +22,17 @@ class MyApp extends StatelessWidget {
       title: 'My App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      // home: const MainApp(),
-      initialRoute: '/', // Boshlang'ich route
-      routes: {
-        '/': (context) => MainApp(),
-        '/second': (context) => Second(),
-        // '/bemorlar': (context) => BemorlarEkrani(),
-        // ... va hokazo, qolgan ekranlar uchun ham shunga o'xshash
-      },
+      home: const MainApp(),
+
+      // initialRoute: '/', // Boshlang'ich route
+      // routes: {
+      //   '/': (context) => MainApp(),
+      //   '/second': (context) => Second(),
+      //   // '/bemorlar': (context) => BemorlarEkrani(),
+      //   // ... va hokazo, qolgan ekranlar uchun ham shunga o'xshash
+      // },
     );
   }
 }
@@ -36,259 +45,93 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  final _advancedDrawerController = AdvancedDrawerController();
+  final ZoomDrawerController _zoomDrawerController = ZoomDrawerController();
+  @override
+  Widget build(BuildContext context) {
+    return ZoomDrawer(
+      controller: _zoomDrawerController,
+      style: DrawerStyle.defaultStyle,
+      menuScreen: MenuPage(),
+      mainScreen: HomeScreen(zoomDrawerController: _zoomDrawerController),
+      menuBackgroundColor: Colors.indigo,
+    );
+  }
+}
+
+class MenuItems {
+  static const home = MenuItem('Home', Iconsax.home);
+  static const profile = MenuItem('Profile', Iconsax.profile);
+  static const appointments = MenuItem('Appointments', Iconsax.calendar_1);
+  static const patients = MenuItem('Patients', Iconsax.people);
+  static const messages = MenuItem('Messages', Iconsax.message);
+  static const payments = MenuItem('Payments', Iconsax.wallet_3);
+  static const statistics = MenuItem('Statistics', Iconsax.chart_2);
+  static const medicalRecords =
+      MenuItem('Medical Records', Iconsax.document_text);
+  static const settings = MenuItem('Settings', Iconsax.setting_2);
+  static const helpAndSupport = MenuItem('Help & Support', Iconsax.info_circle);
+  static const logout = MenuItem('Logout', Iconsax.logout);
+
+  static const all = <MenuItem>[
+    home,
+    profile,
+    appointments,
+    patients,
+    messages,
+    payments,
+    statistics,
+    medicalRecords,
+    settings,
+    helpAndSupport,
+    logout,
+  ];
+}
+
+class MenuPage extends StatelessWidget {
+  const MenuPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return AdvancedDrawer(
-      backdrop: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Colors.blueGrey, Colors.blueGrey.withOpacity(0.2)],
-          ),
-        ),
-      ),
-      controller: _advancedDrawerController,
-      animationCurve: Curves.easeInOut,
-      animationDuration: const Duration(milliseconds: 300),
-      animateChildDecoration: true,
-      rtlOpening: false,
-      // openScale: 0.5,
-      disabledGestures: false,
-      childDecoration: const BoxDecoration(
-        // NOTICE: Uncomment if you want to add shadow behind the page.
-        // Keep in mind that it may cause animation jerks.
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 0.0,
-          ),
-        ],
-        borderRadius: BorderRadius.all(Radius.circular(16)),
-      ),
-      drawer: SafeArea(
-        child: ListTileTheme(
-          textColor: Colors.white,
-          iconColor: Colors.white,
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              /// SHIFOKOR MA'LUMOTLARI
-              DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CircleAvatar(
-                      radius: 40,
-                      backgroundImage:
-                          AssetImage('assets/images/doctor_photo.jpg'),
-                      // Shifokor rasmi
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      'Dr. To\'liq Ism',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                      ),
-                    ),
-                    Text(
-                      'Ixtisoslik',
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              /// MENYU ELEMENTLARI
-              ListTile(
-                onTap: () {},
-                leading: const Icon(Icons.home, size: 20),
-                title: const Text(
-                  'Bosh sahifa',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.normal,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-              ListTile(
-                onTap: () {
-                  _advancedDrawerController.hideDrawer();
-                  // _advancedDrawerController.hideDrawer(); // Drawerni yopish
-                  Navigator.pushNamed(context, '/second');
-                },
-                leading: const Icon(Icons.calendar_today, size: 20),
-                title: const Text(
-                  'Qabul jadvali',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.normal,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-              ListTile(
-                onTap: () {},
-                leading: const Icon(Icons.people),
-                title: const Text('Bemorlar'),
-              ),
-              ListTile(
-                onTap: () {},
-                leading: const Icon(Icons.message),
-                title: const Text('Xabarlar'),
-              ),
-              ListTile(
-                onTap: () {},
-                leading: const Icon(Icons.payment),
-                title: const Text('To\'lovlar'),
-              ),
-              ListTile(
-                onTap: () {},
-                leading: const Icon(Icons.bar_chart),
-                title: const Text('Statistika'),
-              ),
-              ListTile(
-                onTap: () {},
-                leading: const Icon(Icons.medical_services),
-                title: const Text('Tibbiy ma\'lumotlar'),
-              ),
-              ListTile(
-                onTap: () {},
-                leading: const Icon(Icons.settings),
-                title: const Text('Sozlamalar'),
-              ),
-              ListTile(
-                onTap: () {},
-                leading: const Icon(Icons.help),
-                title: const Text('Yordam'),
-              ),
-              const Spacer(), // Bo'sh joyni to'ldirish uchun
-
-              /// PASTKI QISM
-              Divider(
-                height: 1.0,
-                color: Colors.white70,
-              ),
-              DefaultTextStyle(
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.white54,
-                ),
-                child: Container(
-                  margin: const EdgeInsets.symmetric(
-                    vertical: 16.0,
-                  ),
-                  child: Column(
-                    children: [
-                      const Text('Ilova versiyasi 1.0.0'),
-                      TextButton(
-                        onPressed: () {},
-                        child: const Text('Foydalanish shartlari'),
-                      ),
-                      TextButton(
-                        onPressed: () {},
-                        child: const Text('Maxfiylik siyosati'),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Advanced Drawer Example'),
-          leading: IconButton(
-            onPressed: _handleMenuButtonPressed,
-            icon: ValueListenableBuilder<AdvancedDrawerValue>(
-              valueListenable: _advancedDrawerController,
-              builder: (_, value, __) {
-                return AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 250),
-                  child: Icon(
-                    value.visible ? Icons.clear : Icons.menu,
-                    key: ValueKey<bool>(value.visible),
-                  ),
-                );
+    return Scaffold(
+      backgroundColor: Colors.indigo,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: MenuItems.all.map((menuItem) {
+            return ListTile(
+              leading: Icon(menuItem.icon),
+              title: Text(menuItem.title),
+              onTap: () {
+                // TODO: Implement navigation to the selected screen
+                // Navigator.push(context, MaterialPageRoute(builder: (context) => Second()));
               },
-            ),
-          ),
-        ),
-        body: Container(
-          child: Text('Home'),
+            );
+          }).toList(),
         ),
       ),
     );
   }
-
-  void _handleMenuButtonPressed() {
-    // NOTICE: Manage Advanced Drawer state through the Controller.
-    // _advancedDrawerController.value = AdvancedDrawerValue.visible();
-    _advancedDrawerController.showDrawer();
-  }
 }
 
-class Home extends StatelessWidget {
-  const Home({super.key});
+class HomeScreen extends StatefulWidget {
+  final ZoomDrawerController zoomDrawerController; // Add this line
+  const HomeScreen({super.key, required this.zoomDrawerController});
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Home'),
-      ),
-      body: Center(
-        child: Text('Home Page'),
-      ),
-    );
-  }
-}
-
-class Second extends StatefulWidget {
-  const Second({super.key});
-
-  @override
-  State<Second> createState() => _SecondState();
-}
-
-class _SecondState extends State<Second> {
-  final _advancedDrawerController = AdvancedDrawerController();
-  @override
-  void initState() {
-    super.initState();
-    // Agar drawer yopiq bo'lsa, uni ochish
-    if (!_advancedDrawerController.value.visible) {
-      _advancedDrawerController.showDrawer();
-    }
-  }
-
-  @override
-  void dispose() {
-    // Bu yerda drawerni yopish shart emas, chunki u ochiq qolishi kerak
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Second'),
-      ),
-      body: Center(
-        child: Text('Second Page'),
+        title: Text('Home'),
+        leading: IconButton(
+          onPressed: () => ZoomDrawer.of(context)!.toggle(),
+          icon: Icon(Iconsax.category),
+        ),
       ),
     );
   }
