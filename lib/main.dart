@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 
 void main() {
   runApp(const MyApp());
@@ -7,119 +8,288 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      title: 'My App',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      // home: const MainApp(),
+      initialRoute: '/', // Boshlang'ich route
+      routes: {
+        '/': (context) => MainApp(),
+        '/second': (context) => Second(),
+        // '/bemorlar': (context) => BemorlarEkrani(),
+        // ... va hokazo, qolgan ekranlar uchun ham shunga o'xshash
+      },
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+class MainApp extends StatefulWidget {
+  const MainApp({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<MainApp> createState() => _MainAppState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _MainAppState extends State<MainApp> {
+  final _advancedDrawerController = AdvancedDrawerController();
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  @override
+  Widget build(BuildContext context) {
+    return AdvancedDrawer(
+      backdrop: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Colors.blueGrey, Colors.blueGrey.withOpacity(0.2)],
+          ),
+        ),
+      ),
+      controller: _advancedDrawerController,
+      animationCurve: Curves.easeInOut,
+      animationDuration: const Duration(milliseconds: 300),
+      animateChildDecoration: true,
+      rtlOpening: false,
+      // openScale: 0.5,
+      disabledGestures: false,
+      childDecoration: const BoxDecoration(
+        // NOTICE: Uncomment if you want to add shadow behind the page.
+        // Keep in mind that it may cause animation jerks.
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 0.0,
+          ),
+        ],
+        borderRadius: BorderRadius.all(Radius.circular(16)),
+      ),
+      drawer: SafeArea(
+        child: ListTileTheme(
+          textColor: Colors.white,
+          iconColor: Colors.white,
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              /// SHIFOKOR MA'LUMOTLARI
+              DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CircleAvatar(
+                      radius: 40,
+                      backgroundImage:
+                          AssetImage('assets/images/doctor_photo.jpg'),
+                      // Shifokor rasmi
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'Dr. To\'liq Ism',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                      ),
+                    ),
+                    Text(
+                      'Ixtisoslik',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              /// MENYU ELEMENTLARI
+              ListTile(
+                onTap: () {},
+                leading: const Icon(Icons.home, size: 20),
+                title: const Text(
+                  'Bosh sahifa',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.normal,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+              ListTile(
+                onTap: () {
+                  _advancedDrawerController.hideDrawer();
+                  // _advancedDrawerController.hideDrawer(); // Drawerni yopish
+                  Navigator.pushNamed(context, '/second');
+                },
+                leading: const Icon(Icons.calendar_today, size: 20),
+                title: const Text(
+                  'Qabul jadvali',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.normal,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+              ListTile(
+                onTap: () {},
+                leading: const Icon(Icons.people),
+                title: const Text('Bemorlar'),
+              ),
+              ListTile(
+                onTap: () {},
+                leading: const Icon(Icons.message),
+                title: const Text('Xabarlar'),
+              ),
+              ListTile(
+                onTap: () {},
+                leading: const Icon(Icons.payment),
+                title: const Text('To\'lovlar'),
+              ),
+              ListTile(
+                onTap: () {},
+                leading: const Icon(Icons.bar_chart),
+                title: const Text('Statistika'),
+              ),
+              ListTile(
+                onTap: () {},
+                leading: const Icon(Icons.medical_services),
+                title: const Text('Tibbiy ma\'lumotlar'),
+              ),
+              ListTile(
+                onTap: () {},
+                leading: const Icon(Icons.settings),
+                title: const Text('Sozlamalar'),
+              ),
+              ListTile(
+                onTap: () {},
+                leading: const Icon(Icons.help),
+                title: const Text('Yordam'),
+              ),
+              const Spacer(), // Bo'sh joyni to'ldirish uchun
+
+              /// PASTKI QISM
+              Divider(
+                height: 1.0,
+                color: Colors.white70,
+              ),
+              DefaultTextStyle(
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.white54,
+                ),
+                child: Container(
+                  margin: const EdgeInsets.symmetric(
+                    vertical: 16.0,
+                  ),
+                  child: Column(
+                    children: [
+                      const Text('Ilova versiyasi 1.0.0'),
+                      TextButton(
+                        onPressed: () {},
+                        child: const Text('Foydalanish shartlari'),
+                      ),
+                      TextButton(
+                        onPressed: () {},
+                        child: const Text('Maxfiylik siyosati'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Advanced Drawer Example'),
+          leading: IconButton(
+            onPressed: _handleMenuButtonPressed,
+            icon: ValueListenableBuilder<AdvancedDrawerValue>(
+              valueListenable: _advancedDrawerController,
+              builder: (_, value, __) {
+                return AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
+                  child: Icon(
+                    value.visible ? Icons.clear : Icons.menu,
+                    key: ValueKey<bool>(value.visible),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+        body: Container(
+          child: Text('Home'),
+        ),
+      ),
+    );
+  }
+
+  void _handleMenuButtonPressed() {
+    // NOTICE: Manage Advanced Drawer state through the Controller.
+    // _advancedDrawerController.value = AdvancedDrawerValue.visible();
+    _advancedDrawerController.showDrawer();
+  }
+}
+
+class Home extends StatelessWidget {
+  const Home({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Home'),
+      ),
+      body: Center(
+        child: Text('Home Page'),
+      ),
+    );
+  }
+}
+
+class Second extends StatefulWidget {
+  const Second({super.key});
+
+  @override
+  State<Second> createState() => _SecondState();
+}
+
+class _SecondState extends State<Second> {
+  final _advancedDrawerController = AdvancedDrawerController();
+  @override
+  void initState() {
+    super.initState();
+    // Agar drawer yopiq bo'lsa, uni ochish
+    if (!_advancedDrawerController.value.visible) {
+      _advancedDrawerController.showDrawer();
+    }
+  }
+
+  @override
+  void dispose() {
+    // Bu yerda drawerni yopish shart emas, chunki u ochiq qolishi kerak
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: const Text('Second'),
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
+        child: Text('Second Page'),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
