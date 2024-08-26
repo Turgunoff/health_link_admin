@@ -1,4 +1,4 @@
-package com.example.health_link_admin
+package uz.healthlink.com
 
 import io.flutter.embedding.android.FlutterActivity
 
