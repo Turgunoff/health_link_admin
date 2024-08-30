@@ -1,10 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:health_link_admin/screens/auth/logic/bloc/registration_bloc.dart';
+import 'package:health_link_admin/screens/auth/sign_up_screen.dart';
 import 'package:health_link_admin/screens/drawer/main_app.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  runApp(const MyApp());
+  runApp(
+    // RegistrationBloc'ni RepositoryProvider orqali taqdim etish
+    MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider(create: (context) => RegistrationBloc()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -15,7 +26,7 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'My App',
-      home: MainApp(),
+      home: SignUpScreen(),
 
       // initialRoute: '/', // Boshlang'ich route
       // routes: {

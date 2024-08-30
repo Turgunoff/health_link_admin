@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:health_link_admin/model/menu_item.dart';
+import 'package:health_link_admin/model/user_model.dart';
 import 'package:health_link_admin/screens/appointments/appointments_screen.dart';
 import 'package:health_link_admin/screens/help/help_screen.dart';
 import 'package:health_link_admin/screens/home/home_screen.dart';
@@ -13,7 +14,8 @@ import 'package:health_link_admin/screens/statistics/statistics_screen.dart';
 import 'package:iconsax/iconsax.dart';
 
 class MainApp extends StatefulWidget {
-  const MainApp({super.key});
+  final UserModel? user; // user obyektini qabul qilish
+  const MainApp({super.key, this.user});
 
   @override
   State<MainApp> createState() => _MainAppState();
