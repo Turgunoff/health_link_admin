@@ -1,5 +1,5 @@
 class UserModel {
-  final int id;
+  final int? id;
   final String firstName;
   final String lastName;
   final String email;
@@ -7,7 +7,7 @@ class UserModel {
   // ... boshqa kerakli maydonlar (ixtisoslik, tajriba, shifoxona va h.k.)
 
   UserModel({
-    required this.id,
+    this.id,
     required this.firstName,
     required this.lastName,
     required this.email,
@@ -17,7 +17,9 @@ class UserModel {
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['id'] is int ? json['id'] : int.parse(json['id'].toString()), // id turini to'g'ri aylantirish
+      id: json['id'] is int
+          ? json['id']
+          : int.parse(json['id'].toString()), // id turini to'g'ri aylantirish
       firstName: json['first_name'],
       lastName: json['last_name'],
       email: json['email'],

@@ -30,19 +30,25 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
         );
 
         if (response.statusCode == 200 || response.statusCode == 201) {
-          // Muvaffaqiyatli ro'yxatdan o'tish
-          final Map<String, dynamic> responseData = jsonDecode(response.body);
+          // Backend javobini konsolga chiqarish
+          final responseData = jsonDecode(response.body);
+          print('Serverdan kelgan javob: $responseData');
+
           final UserModel newUser = UserModel.fromJson(responseData);
 
-          // Tokenni saqlash
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setString('token',
-              responseData['token']); // Backenddan kelgan tokenni saqlash
+          final token = responseData['token'];
 
-          emit(RegistrationSuccess(newUser)); // user obyektini uzatish
-          // Foydalanuvchini tizimga kirish ekraniga o'ting
+          if (token != null && token is String) {
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString('token', token);
+            print('Token saqlandi: $token');
+            emit(RegistrationSuccess(newUser)); // user obyektini uzatish
+          } else {
+            emit(RegistrationFailure('Token olishda xatolik yuz berdi'));
+          }
         } else {
           emit(RegistrationFailure('Xatolik yuz berdi: ${response.body}'));
+          print(response.statusCode);
         }
       } catch (error) {
         emit(RegistrationFailure('Serverga ulanishda xatolik yuz berdi'));
