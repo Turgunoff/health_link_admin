@@ -15,7 +15,8 @@ import 'package:iconsax/iconsax.dart';
 
 class MainApp extends StatefulWidget {
   final UserModel? user; // user obyektini qabul qilish
-  const MainApp({super.key, this.user});
+  final String? token; // Tokenni qabul qilish
+  const MainApp({super.key, this.user, this.token});
 
   @override
   State<MainApp> createState() => _MainAppState();

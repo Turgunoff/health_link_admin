@@ -3,12 +3,15 @@ import 'package:health_link_admin/model/user_model.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:bloc/bloc.dart';
+import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'registration_event.dart';
 part 'registration_state.dart';
 
 class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
+  var logger = Logger();
   RegistrationBloc() : super(RegistrationInitial()) {
     on<RegisterUserEvent>((event, emit) async {
       emit(RegistrationLoading());
@@ -30,6 +33,12 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
           // Muvaffaqiyatli ro'yxatdan o'tish
           final Map<String, dynamic> responseData = jsonDecode(response.body);
           final UserModel newUser = UserModel.fromJson(responseData);
+
+          // Tokenni saqlash
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('token',
+              responseData['token']); // Backenddan kelgan tokenni saqlash
+
           emit(RegistrationSuccess(newUser)); // user obyektini uzatish
           // Foydalanuvchini tizimga kirish ekraniga o'ting
         } else {
@@ -37,6 +46,11 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
         }
       } catch (error) {
         emit(RegistrationFailure('Serverga ulanishda xatolik yuz berdi'));
+        print(error.toString());
+        logger.e(
+          'RegistrationBloc error: ${error.toString()}',
+          error: error,
+        );
       }
     });
   }
