@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:health_link_admin/model/menu_item.dart';
 import 'package:health_link_admin/model/user_model.dart';
 import 'package:health_link_admin/screens/appointments/appointments_screen.dart';
+import 'package:health_link_admin/screens/auth/sign_in_screen.dart';
 import 'package:health_link_admin/screens/help/help_screen.dart';
 import 'package:health_link_admin/screens/home/home_screen.dart';
 import 'package:health_link_admin/screens/medicalRecords/medical_records_screen.dart';
@@ -12,6 +13,7 @@ import 'package:health_link_admin/screens/profile/profile_screen.dart';
 import 'package:health_link_admin/screens/settings/settings_screen.dart';
 import 'package:health_link_admin/screens/statistics/statistics_screen.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainApp extends StatefulWidget {
   final UserModel? user; // user obyektini qabul qilish
@@ -24,6 +26,11 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> {
   var currentPage = DrawerSections.home;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,11 +86,46 @@ class _MainAppState extends State<MainApp> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              const MyHeaderDrawer(),
+              myHeaderDrawer(),
               myDrawerList(),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget myHeaderDrawer() {
+    return Container(
+      color: const Color(0xFF0165FC),
+      width: double.infinity,
+      height: 200,
+      padding: const EdgeInsets.only(top: 20.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            margin: const EdgeInsets.only(bottom: 10),
+            height: 70,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              image: DecorationImage(
+                image: AssetImage('assets/images/logo.png'),
+              ),
+            ),
+          ),
+          Text(
+            widget.user != null ? widget.user!.firstName : 'Guest',
+            style: const TextStyle(color: Colors.white, fontSize: 20),
+          ),
+          Text(
+            widget.user != null ? widget.user!.email : 'Guest', // Null check,
+            style: TextStyle(
+              color: Colors.grey[200],
+              fontSize: 14,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -152,7 +194,7 @@ class _MainAppState extends State<MainApp> {
             } else if (id == 10) {
               currentPage = DrawerSections.help;
             } else if (id == 11) {
-              currentPage = DrawerSections.logout;
+              _logout(context);
             }
           });
         },
@@ -182,6 +224,43 @@ class _MainAppState extends State<MainApp> {
         ),
       ),
     );
+  }
+
+  Future<void> _logout(BuildContext context) async {
+    // Показать диалог подтверждения
+    bool confirmLogout = await showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Выход'),
+              content: const Text('Вы уверены, что хотите выйти?'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false), // Отмена
+                  child: const Text('Отмена'),
+                ),
+                TextButton(
+                  onPressed: () =>
+                      Navigator.of(context).pop(true), // Подтверждение
+                  child: const Text('Выйти'),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false; // Если диалог закрыт без выбора, считаем, что выход отменен
+
+    if (confirmLogout) {
+      // Если пользователь подтвердил выход
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('token');
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const SignInScreen()),
+        (route) => false,
+      );
+    }
   }
 }
 
@@ -214,47 +293,47 @@ class MenuItems {
   static const logout = MenuItem('Logout', Iconsax.logout);
 }
 
-class MyHeaderDrawer extends StatefulWidget {
-  const MyHeaderDrawer({super.key});
+// class MyHeaderDrawer extends StatefulWidget {
+//   const MyHeaderDrawer({super.key});
 
-  @override
-  State<MyHeaderDrawer> createState() => _MyHeaderDrawerState();
-}
+//   @override
+//   State<MyHeaderDrawer> createState() => _MyHeaderDrawerState();
+// }
 
-class _MyHeaderDrawerState extends State<MyHeaderDrawer> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: const Color(0xFF0165FC),
-      width: double.infinity,
-      height: 200,
-      padding: const EdgeInsets.only(top: 20.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            margin: const EdgeInsets.only(bottom: 10),
-            height: 70,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              image: DecorationImage(
-                image: AssetImage('assets/images/logo.png'),
-              ),
-            ),
-          ),
-          const Text(
-            "Rapid Tech",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
-          Text(
-            "info@rapidtech.dev",
-            style: TextStyle(
-              color: Colors.grey[200],
-              fontSize: 14,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+// class _MyHeaderDrawerState extends State<MyHeaderDrawer> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       color: const Color(0xFF0165FC),
+//       width: double.infinity,
+//       height: 200,
+//       padding: const EdgeInsets.only(top: 20.0),
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: [
+//           Container(
+//             margin: const EdgeInsets.only(bottom: 10),
+//             height: 70,
+//             decoration: const BoxDecoration(
+//               shape: BoxShape.circle,
+//               image: DecorationImage(
+//                 image: AssetImage('assets/images/logo.png'),
+//               ),
+//             ),
+//           ),
+//           const Text(
+//             "Rapid Tech",
+//             style: TextStyle(color: Colors.white, fontSize: 20),
+//           ),
+//           Text(
+//             "info@rapidtech.dev",
+//             style: TextStyle(
+//               color: Colors.grey[200],
+//               fontSize: 14,
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }

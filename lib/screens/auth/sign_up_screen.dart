@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'; // Bloc uchun import
-import 'package:health_link_admin/screens/auth/logic/bloc/registration_bloc.dart'; // RegistrationBloc uchun import
+import 'package:health_link_admin/screens/auth/logic/bloc/auth_bloc.dart';
 import 'package:health_link_admin/screens/drawer/main_app.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,12 +41,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
       String firstName = _firstNameController.text;
       String email = _emailController.text;
       String password = _passwordController.text;
-      // ... boshqa kerakli ma'lumotlarni oling (ixtisoslik, tajriba, shifoxona va h.k.)
 
-      // 3. Parolni shifrlash (agar kerak bo'lsa)
-
-      // 4. Backendga so'rov yuborish
-      context.read<RegistrationBloc>().add(RegisterUserEvent(
+      context.read<AuthBloc>().add(RegisterUserEvent(
             firstName: firstName,
             lastName: lastName,
             email: email,
@@ -57,7 +53,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Future<void> _getTokenAndNavigate(
-      BuildContext context, UserModel user) async {
+      BuildContext context, UserModel user, String token) async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
 
@@ -72,16 +68,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<RegistrationBloc, RegistrationState>(
+    return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
-        if (state is RegistrationSuccess) {
+        if (state is AuthSuccess) {
           // Muvaffaqiyatli ro'yxatdan o'tish, foydalanuvchini MainAppScreen'ga o'ting va user obyektini uzating
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
                 content: Text('Muvaffaqiyatli ro\'yxatdan o\'tdingiz!')),
           );
-          _getTokenAndNavigate(context, state.user);
-        } else if (state is RegistrationFailure) {
+          _getTokenAndNavigate(context, state.user, state.token);
+        } else if (state is AuthFailure) {
           // Xatolik yuz berdi, foydalanuvchiga xabar bering
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.error)),
@@ -90,6 +86,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
       },
       builder: (context, state) {
         return Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ),
           body: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Form(
@@ -169,7 +173,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     onPressed: () {
                       _registerUser();
                     },
-                    child: state is RegistrationLoading
+                    child: state is AuthLoading
                         ? const CircularProgressIndicator()
                         : const Text('Ro\'yxatdan o\'tish'),
                   ),

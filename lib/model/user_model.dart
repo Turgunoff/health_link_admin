@@ -4,7 +4,6 @@ class UserModel {
   final String lastName;
   final String email;
   // final String password;
-  // ... boshqa kerakli maydonlar (ixtisoslik, tajriba, shifoxona va h.k.)
 
   UserModel({
     this.id,
@@ -12,19 +11,17 @@ class UserModel {
     required this.lastName,
     required this.email,
     // required this.password,
-    // ... boshqa maydonlar uchun konstruktor parametrlari
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['id'] is int
-          ? json['id']
-          : int.parse(json['id'].toString()), // id turini to'g'ri aylantirish
+      id: json['id'] != null && json['id'].toString().isNotEmpty
+          ? (json['id'] is int ? json['id'] : int.parse(json['id'].toString()))
+          : null, // Or provide a default value
       firstName: json['first_name'],
       lastName: json['last_name'],
       email: json['email'],
       // password: json['password'],
-      // ... boshqa maydonlar uchun qiymatlarni olish
     );
   }
 
