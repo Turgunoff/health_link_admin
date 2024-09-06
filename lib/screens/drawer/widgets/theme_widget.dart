@@ -27,7 +27,7 @@ class ThemeWidget extends StatelessWidget {
             ),
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: Colors.grey,
+              color: isDarkMode ? Colors.grey[600] : Colors.grey[300],
               borderRadius: BorderRadius.circular(50),
             ),
             child: Row(
@@ -47,13 +47,17 @@ class ThemeWidget extends StatelessWidget {
                         color: isDarkMode ? Colors.transparent : Colors.white,
                         borderRadius: BorderRadius.circular(50),
                       ),
-                      child: const Row(
+                      child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Iconsax.sun_1, color: Colors.black),
+                          Icon(
+                            isDarkMode ? Iconsax.sun_1 : Iconsax.sun_15,
+                            color: isDarkMode ? Colors.white : Colors.amber,
+                          ),
                           SizedBox(width: 8),
-                          Text('Light'),
+                          Text('Light',
+                              style: Theme.of(context).textTheme.bodyMedium),
                         ],
                       ),
                     ),
@@ -73,13 +77,26 @@ class ThemeWidget extends StatelessWidget {
                         color: !isDarkMode ? Colors.transparent : Colors.white,
                         borderRadius: BorderRadius.circular(50),
                       ),
-                      child: const Row(
+                      child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Iconsax.moon, color: Colors.black),
+                          Icon(
+                            isDarkMode ? Iconsax.moon5 : Iconsax.moon,
+                            color: isDarkMode ? Colors.grey[700] : Colors.black,
+                          ),
                           SizedBox(width: 8),
-                          Text('Dark'),
+                          Text(
+                            'Dark',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                  color: isDarkMode
+                                      ? Colors.grey[700]
+                                      : Colors.black,
+                                ),
+                          ),
                         ],
                       ),
                     ),

@@ -13,7 +13,6 @@ import 'package:health_link_admin/screens/payments/payments_screen.dart';
 import 'package:health_link_admin/screens/profile/profile_screen.dart';
 import 'package:health_link_admin/screens/settings/settings_screen.dart';
 import 'package:health_link_admin/screens/statistics/statistics_screen.dart';
-import 'package:health_link_admin/theme/bloc/theme_bloc.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -43,17 +42,37 @@ class _MainAppState extends State<MainApp> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: const Text('Выход'),
-              content: const Text('Вы уверены, что хотите выйти?'),
+              title: Text(
+                'Выход',
+                style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              content: Text(
+                'Вы уверены, что хотите выйти?',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
               actions: <Widget>[
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(false), // Отмена
-                  child: const Text('Отмена'),
+                  child: Text(
+                    'Отмена',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium!
+                        .copyWith(color: Theme.of(context).primaryColor),
+                  ),
                 ),
                 TextButton(
                   onPressed: () =>
                       Navigator.of(context).pop(true), // Подтверждение
-                  child: const Text('Выйти'),
+                  child: Text(
+                    'Выйти',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium!
+                        .copyWith(color: Colors.red),
+                  ),
                 ),
               ],
             );
@@ -106,7 +125,6 @@ class _MainAppState extends State<MainApp> {
           return IconButton(
             icon: const Icon(
               Iconsax.category,
-              color: Colors.white,
             ),
             onPressed: () {
               Scaffold.of(context)
@@ -114,20 +132,15 @@ class _MainAppState extends State<MainApp> {
             },
           );
         }),
-        backgroundColor: const Color(0xFF0165FC),
         title: const Text(
           "Health Link Admin",
-          style: TextStyle(
-            fontSize: 20,
-            color: Colors.white,
-          ),
         ),
       ),
       body: container,
       drawer: SafeArea(
         child: Drawer(
           clipBehavior: Clip.antiAliasWithSaveLayer,
-          backgroundColor: Colors.white,
+          // backgroundColor: Colors.white,
           child: Stack(
             children: [
               Column(
@@ -138,12 +151,11 @@ class _MainAppState extends State<MainApp> {
                     endIndent: 15,
                     indent: 15,
                     height: 1,
-                    color: Colors.grey[300],
                   ),
                   myDrawerList(),
                 ],
               ),
-              ThemeWidget()
+              const ThemeWidget()
             ],
           ),
         ),
@@ -158,7 +170,7 @@ class _MainAppState extends State<MainApp> {
         right: 15,
         left: 15,
       ),
-      color: Colors.white,
+      // color: Colors.white,
       child: Column(
         // shows the list of menu drawer
         children: [
@@ -193,7 +205,7 @@ class _MainAppState extends State<MainApp> {
   Widget menuItem(int id, String title, IconData icon, bool selected) {
     return Material(
       borderRadius: const BorderRadius.all(Radius.circular(8)),
-      color: selected ? const Color(0xFF0165FC) : Colors.transparent,
+      color: selected ? Theme.of(context).primaryColor : Colors.transparent,
       child: InkWell(
         onTap: () {
           Navigator.pop(context);
@@ -231,17 +243,17 @@ class _MainAppState extends State<MainApp> {
                 child: Icon(
                   icon,
                   size: 20,
-                  color: selected ? Colors.white : Colors.black,
+                  color: selected ? Colors.white : null,
                 ),
               ),
               Expanded(
-                flex: 3,
+                flex: 4,
                 child: Text(
                   title,
-                  style: TextStyle(
-                    color: selected ? Colors.white : Colors.black,
-                    fontSize: 16,
-                  ),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium!
+                      .copyWith(color: selected ? Colors.white : null),
                 ),
               ),
             ],
