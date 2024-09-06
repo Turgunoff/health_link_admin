@@ -140,7 +140,6 @@ class _MainAppState extends State<MainApp> {
       drawer: SafeArea(
         child: Drawer(
           clipBehavior: Clip.antiAliasWithSaveLayer,
-          // backgroundColor: Colors.white,
           child: Stack(
             children: [
               Column(
