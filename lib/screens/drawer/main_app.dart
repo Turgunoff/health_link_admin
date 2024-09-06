@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_link_admin/model/menu_item.dart';
 import 'package:health_link_admin/model/user_model.dart';
 import 'package:health_link_admin/screens/appointments/appointments_screen.dart';
@@ -12,8 +13,12 @@ import 'package:health_link_admin/screens/payments/payments_screen.dart';
 import 'package:health_link_admin/screens/profile/profile_screen.dart';
 import 'package:health_link_admin/screens/settings/settings_screen.dart';
 import 'package:health_link_admin/screens/statistics/statistics_screen.dart';
+import 'package:health_link_admin/theme/bloc/theme_bloc.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'widgets/header_drawer.dart';
+import 'widgets/theme_widget.dart';
 
 class MainApp extends StatefulWidget {
   final UserModel? user; // user obyektini qabul qilish
@@ -30,6 +35,43 @@ class _MainAppState extends State<MainApp> {
   @override
   void initState() {
     super.initState();
+  }
+
+  Future<void> _logout(BuildContext context) async {
+    // Показать диалог подтверждения
+    bool confirmLogout = await showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Выход'),
+              content: const Text('Вы уверены, что хотите выйти?'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false), // Отмена
+                  child: const Text('Отмена'),
+                ),
+                TextButton(
+                  onPressed: () =>
+                      Navigator.of(context).pop(true), // Подтверждение
+                  child: const Text('Выйти'),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false; // Если диалог закрыт без выбора, считаем, что выход отменен
+
+    if (confirmLogout) {
+      // Если пользователь подтвердил выход
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('token');
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const SignInScreen()),
+        (route) => false,
+      );
+    }
   }
 
   @override
@@ -82,50 +124,29 @@ class _MainAppState extends State<MainApp> {
         ),
       ),
       body: container,
-      drawer: Drawer(
-        child: SingleChildScrollView(
-          child: Column(
+      drawer: SafeArea(
+        child: Drawer(
+          clipBehavior: Clip.antiAliasWithSaveLayer,
+          backgroundColor: Colors.white,
+          child: Stack(
             children: [
-              myHeaderDrawer(),
-              myDrawerList(),
+              Column(
+                children: [
+                  HeaderDrawer(widget: widget),
+                  Divider(
+                    thickness: 1,
+                    endIndent: 15,
+                    indent: 15,
+                    height: 1,
+                    color: Colors.grey[300],
+                  ),
+                  myDrawerList(),
+                ],
+              ),
+              ThemeWidget()
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget myHeaderDrawer() {
-    return Container(
-      color: const Color(0xFF0165FC),
-      width: double.infinity,
-      height: 200,
-      padding: const EdgeInsets.only(top: 20.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            margin: const EdgeInsets.only(bottom: 10),
-            height: 70,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              image: DecorationImage(
-                image: AssetImage('assets/images/logo.png'),
-              ),
-            ),
-          ),
-          Text(
-            widget.user != null ? widget.user!.firstName : 'Guest',
-            style: const TextStyle(color: Colors.white, fontSize: 20),
-          ),
-          Text(
-            widget.user != null ? widget.user!.email : 'Guest', // Null check,
-            style: TextStyle(
-              color: Colors.grey[200],
-              fontSize: 14,
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -134,32 +155,35 @@ class _MainAppState extends State<MainApp> {
     return Container(
       padding: const EdgeInsets.only(
         top: 15,
+        right: 15,
+        left: 15,
       ),
+      color: Colors.white,
       child: Column(
         // shows the list of menu drawer
         children: [
-          menuItem(1, "Dashboard", Icons.dashboard_outlined,
+          menuItem(1, "Dashboard", Iconsax.home,
               currentPage == DrawerSections.home ? true : false),
-          menuItem(2, "Appointments", Icons.calendar_today_outlined,
+          menuItem(2, "Appointments", Iconsax.calendar,
               currentPage == DrawerSections.appointments ? true : false),
-          menuItem(3, "Patients", Icons.people_alt_outlined,
+          menuItem(3, "Patients", Iconsax.personalcard,
               currentPage == DrawerSections.patients ? true : false),
-          menuItem(4, "Messages", Icons.message_outlined,
+          menuItem(4, "Messages", Iconsax.message,
               currentPage == DrawerSections.messages ? true : false),
-          menuItem(5, "Payments", Icons.payment_outlined,
+          menuItem(5, "Payments", Iconsax.card,
               currentPage == DrawerSections.payments ? true : false),
-          menuItem(6, "Statistics", Icons.bar_chart_outlined,
+          menuItem(6, "Statistics", Iconsax.graph,
               currentPage == DrawerSections.statistics ? true : false),
-          menuItem(7, "Medical Records", Icons.medical_services_outlined,
+          menuItem(7, "Medical Records", Iconsax.monitor_recorder,
               currentPage == DrawerSections.medicalRecords ? true : false),
-          menuItem(8, "Settings", Icons.settings_outlined,
+          menuItem(8, "Settings", Iconsax.setting,
               currentPage == DrawerSections.settings ? true : false),
-          menuItem(9, "Profile", Icons.person_outline,
+          menuItem(9, "Profile", Iconsax.profile_circle,
               currentPage == DrawerSections.profile ? true : false),
-          menuItem(10, "Help & Support", Icons.help_outline,
+          menuItem(10, "Help & Support", Iconsax.info_circle,
               currentPage == DrawerSections.help ? true : false),
           const Divider(), // Add a divider before logout
-          menuItem(11, "Logout", Icons.logout,
+          menuItem(11, "Logout", Iconsax.logout_1,
               currentPage == DrawerSections.logout ? true : false),
         ],
       ),
@@ -168,7 +192,8 @@ class _MainAppState extends State<MainApp> {
 
   Widget menuItem(int id, String title, IconData icon, bool selected) {
     return Material(
-      color: selected ? const Color(0xFFDBEAFE) : Colors.transparent,
+      borderRadius: const BorderRadius.all(Radius.circular(8)),
+      color: selected ? const Color(0xFF0165FC) : Colors.transparent,
       child: InkWell(
         onTap: () {
           Navigator.pop(context);
@@ -199,22 +224,22 @@ class _MainAppState extends State<MainApp> {
           });
         },
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 15),
+          padding: const EdgeInsets.symmetric(vertical: 12),
           child: Row(
             children: [
               Expanded(
                 child: Icon(
                   icon,
                   size: 20,
-                  color: Colors.black,
+                  color: selected ? Colors.white : Colors.black,
                 ),
               ),
               Expanded(
                 flex: 3,
                 child: Text(
                   title,
-                  style: const TextStyle(
-                    color: Colors.black,
+                  style: TextStyle(
+                    color: selected ? Colors.white : Colors.black,
                     fontSize: 16,
                   ),
                 ),
@@ -224,43 +249,6 @@ class _MainAppState extends State<MainApp> {
         ),
       ),
     );
-  }
-
-  Future<void> _logout(BuildContext context) async {
-    // Показать диалог подтверждения
-    bool confirmLogout = await showDialog<bool>(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Выход'),
-              content: const Text('Вы уверены, что хотите выйти?'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(false), // Отмена
-                  child: const Text('Отмена'),
-                ),
-                TextButton(
-                  onPressed: () =>
-                      Navigator.of(context).pop(true), // Подтверждение
-                  child: const Text('Выйти'),
-                ),
-              ],
-            );
-          },
-        ) ??
-        false; // Если диалог закрыт без выбора, считаем, что выход отменен
-
-    if (confirmLogout) {
-      // Если пользователь подтвердил выход
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('token');
-
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const SignInScreen()),
-        (route) => false,
-      );
-    }
   }
 }
 
@@ -292,48 +280,3 @@ class MenuItems {
   static const help = MenuItem('Help & Support', Iconsax.info_circle);
   static const logout = MenuItem('Logout', Iconsax.logout);
 }
-
-// class MyHeaderDrawer extends StatefulWidget {
-//   const MyHeaderDrawer({super.key});
-
-//   @override
-//   State<MyHeaderDrawer> createState() => _MyHeaderDrawerState();
-// }
-
-// class _MyHeaderDrawerState extends State<MyHeaderDrawer> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       color: const Color(0xFF0165FC),
-//       width: double.infinity,
-//       height: 200,
-//       padding: const EdgeInsets.only(top: 20.0),
-//       child: Column(
-//         mainAxisAlignment: MainAxisAlignment.center,
-//         children: [
-//           Container(
-//             margin: const EdgeInsets.only(bottom: 10),
-//             height: 70,
-//             decoration: const BoxDecoration(
-//               shape: BoxShape.circle,
-//               image: DecorationImage(
-//                 image: AssetImage('assets/images/logo.png'),
-//               ),
-//             ),
-//           ),
-//           const Text(
-//             "Rapid Tech",
-//             style: TextStyle(color: Colors.white, fontSize: 20),
-//           ),
-//           Text(
-//             "info@rapidtech.dev",
-//             style: TextStyle(
-//               color: Colors.grey[200],
-//               fontSize: 14,
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
