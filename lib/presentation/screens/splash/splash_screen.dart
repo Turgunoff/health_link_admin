@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:health_link_admin/data/models/user_model.dart';
 import 'package:health_link_admin/presentation/screens/auth/sign_in_screen.dart';
@@ -53,10 +54,14 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Center(
-        child: CircularProgressIndicator(), // Or any loading indicator
-      ),
+        child: CupertinoActivityIndicator(
+          radius: 12,
+          color: Theme.of(context).primaryColor,
+          animating: true,
+        ),
+      ), // Or any loading indicator
     );
   }
 }

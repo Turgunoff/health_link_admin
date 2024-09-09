@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
+import 'package:health_link_admin/data/api/api_constants.dart';
 import 'package:health_link_admin/data/models/user_model.dart';
 import 'package:meta/meta.dart';
 import 'package:http/http.dart' as http;
@@ -10,7 +11,9 @@ part 'auth_event.dart';
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  AuthBloc() : super(AuthInitial()) {
+  final http.Client _httpClient;
+
+  AuthBloc(this._httpClient) : super(AuthInitial()) {
     on<RegisterUserEvent>(_handleRegisterUserEvent);
     on<LoginUserEvent>(_handleLoginUserEvent);
   }
@@ -20,8 +23,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
 
     try {
-      final response = await http.post(
-        Uri.parse('http://54.93.198.137:3000/add/doctor'),
+      final response = await _httpClient.post(
+        Uri.parse(
+            '${ApiConstants.baseUrl}${ApiConstants.registerDoctorEndpoint}'),
         body: jsonEncode({
           'first_name': event.firstName,
           'last_name': event.lastName,
@@ -70,9 +74,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
 
     try {
-      final response = await http.post(
+      final response = await _httpClient.post(
         Uri.parse(
-            'http://54.93.198.137:3000/login'), // Assuming your login endpoint is '/login'
+            '${ApiConstants.baseUrl}${ApiConstants.loginEndpoint}'), // Assuming your login endpoint is '/login'
         body: jsonEncode({
           'email': event.email,
           'password': event.password,
