@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:health_link_admin/screens/auth/logic/bloc/auth_bloc.dart';
-import 'package:health_link_admin/screens/splash/splash_screen.dart';
+import 'package:health_link_admin/presentation/screens/auth/logic/bloc/auth_bloc.dart';
+import 'package:health_link_admin/presentation/screens/splash/splash_screen.dart';
 import 'package:health_link_admin/theme/bloc/theme_bloc.dart';
 import 'package:health_link_admin/theme/theme.dart';
 

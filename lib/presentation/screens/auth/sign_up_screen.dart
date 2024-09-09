@@ -2,12 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'; // Bloc uchun import
-import 'package:health_link_admin/screens/auth/logic/bloc/auth_bloc.dart';
-import 'package:health_link_admin/screens/drawer/main_app.dart';
+import 'package:health_link_admin/presentation/screens/auth/logic/bloc/auth_bloc.dart';
+import 'package:health_link_admin/presentation/screens/drawer/main_app.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../model/user_model.dart';
+import '../../../data/models/user_model.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});

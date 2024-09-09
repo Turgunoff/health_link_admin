@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
-import 'package:health_link_admin/model/user_model.dart';
+import 'package:health_link_admin/data/models/user_model.dart';
 import 'package:meta/meta.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';

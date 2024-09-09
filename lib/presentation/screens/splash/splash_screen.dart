@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:health_link_admin/model/user_model.dart';
-import 'package:health_link_admin/screens/auth/sign_in_screen.dart';
-import 'package:health_link_admin/screens/auth/sign_up_screen.dart';
-import 'package:health_link_admin/screens/drawer/main_app.dart';
+import 'package:health_link_admin/data/models/user_model.dart';
+import 'package:health_link_admin/presentation/screens/auth/sign_in_screen.dart';
+import 'package:health_link_admin/presentation/screens/auth/sign_up_screen.dart';
+import 'package:health_link_admin/presentation/screens/drawer/main_app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
