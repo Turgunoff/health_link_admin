@@ -1,10 +1,12 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'; // Bloc uchun import
 import 'package:health_link_admin/presentation/screens/auth/logic/bloc/auth_bloc.dart';
 import 'package:health_link_admin/presentation/screens/drawer/main_app.dart';
 import 'package:http/http.dart' as http;
+import 'package:iconsax/iconsax.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../data/models/user_model.dart';
@@ -86,12 +88,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
       },
       builder: (context, state) {
         return Scaffold(
+          resizeToAvoidBottomInset: false,
           appBar: AppBar(
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () {
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: GestureDetector(
+              onTap: () {
                 Navigator.pop(context);
               },
+              child: Container(
+                margin: const EdgeInsets.only(left: 16),
+                child: const Icon(
+                  Iconsax.arrow_circle_left,
+                  size: 36,
+                  color: Colors.black,
+                ),
+              ),
             ),
           ),
           body: Padding(
@@ -106,9 +118,37 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     children: [
                       Expanded(
                         child: TextFormField(
-                          controller: _lastNameController,
-                          decoration: const InputDecoration(
-                            labelText: 'Familiya',
+                          controller: _firstNameController,
+                          decoration: InputDecoration(
+                            hintText: 'Ismingizni kiriting',
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.grey.shade300,
+                              ),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Colors.grey.shade300,
+                                ),
+                                borderRadius: BorderRadius.circular(8.0)),
+                            hintStyle: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(color: Colors.grey),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: BorderSide(
+                                color: Colors.grey.shade300,
+                              ),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                width: 1.0,
+                                color: Colors.red,
+                              ),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -118,12 +158,40 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           },
                         ),
                       ),
-                      const SizedBox(width: 20),
+                      const SizedBox(width: 16),
                       Expanded(
                         child: TextFormField(
-                          controller: _firstNameController,
-                          decoration: const InputDecoration(
-                            labelText: 'Ism',
+                          controller: _lastNameController,
+                          decoration: InputDecoration(
+                            hintText: 'Familiyangizni kiriting',
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.grey.shade300,
+                              ),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Colors.grey.shade300,
+                                ),
+                                borderRadius: BorderRadius.circular(8.0)),
+                            hintStyle: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(color: Colors.grey),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: BorderSide(
+                                color: Colors.grey.shade300,
+                              ),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                width: 1.0,
+                                color: Colors.red,
+                              ),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -135,10 +203,39 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 16),
                   TextFormField(
                     controller: _emailController,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
+                    decoration: InputDecoration(
+                      hintText: 'Emailni kiriting',
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                        ),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                          ),
+                          borderRadius: BorderRadius.circular(8.0)),
+                      hintStyle: Theme.of(context)
+                          .textTheme
+                          .bodyMedium!
+                          .copyWith(color: Colors.grey),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                        ),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          width: 1.0,
+                          color: Colors.red,
+                        ),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -153,11 +250,40 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       return null;
                     },
                   ),
+                  const SizedBox(height: 16),
                   TextFormField(
                     obscureText: true,
                     controller: _passwordController,
-                    decoration: const InputDecoration(
-                      labelText: 'Parol',
+                    decoration: InputDecoration(
+                      hintText: 'Parolni kiriting',
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                        ),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                          ),
+                          borderRadius: BorderRadius.circular(8.0)),
+                      hintStyle: Theme.of(context)
+                          .textTheme
+                          .bodyMedium!
+                          .copyWith(color: Colors.grey),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                        ),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          width: 1.0,
+                          color: Colors.red,
+                        ),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -169,23 +295,50 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       return null;
                     },
                   ),
-                  ElevatedButton(
-                    onPressed: () {
+                  const SizedBox(height: 16),
+                  // ElevatedButton(
+                  //   onPressed: () {
+                  //     _registerUser();
+                  //   },
+                  //   child: state is AuthLoading
+                  //       ? const CircularProgressIndicator()
+                  //       : const Text('Ro\'yxatdan o\'tish'),
+                  // ),
+                  GestureDetector(
+                    onTap: () {
                       _registerUser();
                     },
-                    child: state is AuthLoading
-                        ? const CircularProgressIndicator()
-                        : const Text('Ro\'yxatdan o\'tish'),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text('Allaqachon akkauntingiz bormi?'),
-                  const Text.rich(
-                    TextSpan(
-                      text: 'Kirish',
-                      style: TextStyle(
-                          color: Colors.blue, fontWeight: FontWeight.bold),
+                    child: Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(
+                        vertical: 16.0,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.0),
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      alignment: Alignment.center,
+                      child: state is AuthLoading
+                          ? CupertinoActivityIndicator(
+                              color: Colors.white,
+                              radius: 12.0,
+                            )
+                          : Text('Ro\'yxatdan o\'tish',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(color: Colors.white)),
                     ),
                   ),
+                  // const SizedBox(height: 16),
+                  // const Text('Allaqachon akkauntingiz bormi?'),
+                  // const Text.rich(
+                  //   TextSpan(
+                  //     text: 'Kirish',
+                  //     style: TextStyle(
+                  //         color: Colors.blue, fontWeight: FontWeight.bold),
+                  //   ),
+                  // ),
                 ],
               ),
             ),

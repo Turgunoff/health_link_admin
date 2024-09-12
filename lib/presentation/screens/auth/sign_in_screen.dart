@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_link_admin/data/models/user_model.dart';
@@ -60,58 +61,153 @@ class _SignInScreenState extends State<SignInScreen> {
       },
       builder: (context, state) {
         return Scaffold(
-          appBar: AppBar(
-            title: const Text('Kirish'),
-          ),
-          body: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: const InputDecoration(labelText: 'Email'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Iltimos, emailingizni kiriting';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16.0),
-                  TextFormField(
-                    controller: _passwordController,
-                    decoration: const InputDecoration(labelText: 'Parol'),
-                    obscureText: true,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Iltimos, parolni kiriting';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 32.0),
-                  ElevatedButton(
-                    onPressed: state is AuthLoading ? null : _loginUser,
-                    child: state is AuthLoading
-                        ? const CircularProgressIndicator()
-                        : const Text('Kirish'),
-                  ),
-                  const SizedBox(height: 16.0),
-                  const Text('Allaqachon akkauntingiz bormi?'),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Navigate to RegistrationScreen
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const SignUpScreen()));
-                    },
-                    child: const Text('Ro\'yxatdan o\'tish'),
-                  ),
-                ],
+          resizeToAvoidBottomInset: false,
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(30.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        hintText: 'Email',
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                          ),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.grey.shade300,
+                            ),
+                            borderRadius: BorderRadius.circular(8.0)),
+                        hintStyle: Theme.of(context)
+                            .textTheme
+                            .bodyMedium!
+                            .copyWith(color: Colors.grey),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                          ),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            width: 1.0,
+                            color: Colors.red,
+                          ),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Iltimos, emailingizni kiriting';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16.0),
+                    TextFormField(
+                      controller: _passwordController,
+                      decoration: InputDecoration(
+                        hintText: 'Password',
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                          ),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            width: 1.0,
+                            color: Colors.red,
+                          ),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.grey.shade300,
+                            ),
+                            borderRadius: BorderRadius.circular(8.0)),
+                        hintStyle: Theme.of(context)
+                            .textTheme
+                            .bodyMedium!
+                            .copyWith(color: Colors.grey),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                          ),
+                        ),
+                      ),
+                      obscureText: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Iltimos, parolni kiriting';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16.0),
+                    GestureDetector(
+                      onTap: state is AuthLoading ? null : _loginUser,
+                      child: Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.symmetric(
+                          vertical: 16.0,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8.0),
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        alignment: Alignment.center,
+                        child: state is AuthLoading
+                            ? CupertinoActivityIndicator(
+                                color: Colors.white,
+                                radius: 12.0,
+                              )
+                            : Text('Kirish',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(color: Colors.white)),
+                      ),
+                    ),
+                    const SizedBox(height: 16.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Allaqachon akkauntingiz bormi?',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        SizedBox(width: 8.0),
+                        GestureDetector(
+                          onTap: () {
+                            // Navigate to RegistrationScreen
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const SignUpScreen()));
+                          },
+                          child: Text(
+                            'Ro\'yxatdan o\'tish',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodySmall!
+                                .copyWith(
+                                    color: Theme.of(context).primaryColor),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

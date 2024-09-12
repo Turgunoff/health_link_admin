@@ -11,21 +11,19 @@ part 'auth_event.dart';
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final http.Client _httpClient;
+  // final http.Client _httpClient;
 
-  AuthBloc(this._httpClient) : super(AuthInitial()) {
+  AuthBloc() : super(AuthInitial()) {
     on<RegisterUserEvent>(_handleRegisterUserEvent);
     on<LoginUserEvent>(_handleLoginUserEvent);
   }
-
   Future<void> _handleRegisterUserEvent(
       RegisterUserEvent event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
 
     try {
-      final response = await _httpClient.post(
-        Uri.parse(
-            '${ApiConstants.baseUrl}${ApiConstants.registerDoctorEndpoint}'),
+      final response = await http.post(
+        Uri.parse('http://77.232.132.99:47608/add/doctor'),
         body: jsonEncode({
           'first_name': event.firstName,
           'last_name': event.lastName,
@@ -74,9 +72,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
 
     try {
-      final response = await _httpClient.post(
+      final response = await http.post(
         Uri.parse(
-            '${ApiConstants.baseUrl}${ApiConstants.loginEndpoint}'), // Assuming your login endpoint is '/login'
+            'http://77.232.132.99:47608/login'), // Assuming your login endpoint is '/login' // Assuming your login endpoint is '/login'
         body: jsonEncode({
           'email': event.email,
           'password': event.password,
@@ -93,7 +91,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         // Fetch user data (you might need a separate API call for this)
         final userResponse = await http.get(
           Uri.parse(
-              'http://54.93.198.137:3000/user'), // Assuming an endpoint to get user details
+              'http://77.232.132.99:47608/user'), // Assuming an endpoint to get user details
           headers: {'Authorization': 'Bearer $token'},
         );
         print(userResponse.body);

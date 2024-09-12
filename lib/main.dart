@@ -9,35 +9,35 @@ import 'package:http/http.dart' as http;
 
 import 'data/api/api_constants.dart';
 
-final getIt = GetIt.instance;
-void setupLocator() {
-  // API clients
-  getIt.registerLazySingleton<http.Client>(() => http.Client());
-  getIt.registerLazySingleton<ApiConstants>(() => ApiConstants());
-  // ...
+// final getIt = GetIt.instance;
+// void setupLocator() {
+//   // API clients
+//   getIt.registerLazySingleton<http.Client>(() => http.Client());
+//   getIt.registerLazySingleton<ApiConstants>(() => ApiConstants());
+//   // ...
 
-  // Repositories
-  // ...
+//   // Repositories
+//   // ...
 
-  // BLoCs
-  getIt.registerFactory<AuthBloc>(() => AuthBloc(getIt<http.Client>()));
-  getIt.registerFactory<ThemeBloc>(() => ThemeBloc());
+//   // BLoCs
+//   getIt.registerFactory<AuthBloc>(() => AuthBloc(getIt<http.Client>()));
+//   getIt.registerFactory<ThemeBloc>(() => ThemeBloc());
 
-  // Boshqa xizmatlar yoki obyektlar
-  // ...
-}
+//   // Boshqa xizmatlar yoki obyektlar
+//   // ...
+// }
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  setupLocator();
+  // setupLocator();
 
   runApp(
     // BlocProvider orqali RegistrationBloc'ni taqdim etish
     MultiBlocProvider(
       // Use MultiBlocProvider if you have other blocs
       providers: [
-        BlocProvider<AuthBloc>(create: (context) => getIt<AuthBloc>()),
-        BlocProvider<ThemeBloc>(create: (context) => getIt<ThemeBloc>()),
+        BlocProvider<AuthBloc>(create: (context) => AuthBloc()),
+        BlocProvider<ThemeBloc>(create: (context) => ThemeBloc()),
       ],
       child: const MyApp(),
     ),
