@@ -87,7 +87,7 @@ class _MainAppState extends State<MainApp> {
 
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => const SignInScreen()),
+        MaterialPageRoute(builder: (context) => SignInScreen()),
         (route) => false,
       );
     }

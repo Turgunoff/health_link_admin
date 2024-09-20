@@ -47,7 +47,7 @@ class _SplashScreenState extends State<SplashScreen> {
       // If no token, navigate to SignUpScreen
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const SignInScreen()),
+        MaterialPageRoute(builder: (context) => SignInScreen()),
       );
     }
   }
