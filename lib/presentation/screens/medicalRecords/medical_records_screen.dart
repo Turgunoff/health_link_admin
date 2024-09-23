@@ -6,15 +6,14 @@ class MedicalRecordsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
-      body: Center(
+      body: const Center(
         child: Text('Medical Records Screen'),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // Open medical record details
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }

@@ -10,16 +10,16 @@ class ProfileScreen extends StatelessWidget {
         child: Column(
           children: [
             Image.asset('assets/images/user.png'),
-            SizedBox(height: 16),
-            Text('John Doe'),
-            SizedBox(height: 8),
-            Text('Software Engineer'),
-            SizedBox(height: 8),
-            Text('Location: New York, USA'),
-            SizedBox(height: 8),
-            Text('Email: johndoe@example.com'),
-            SizedBox(height: 8),
-            Text('Phone: +1 123-456-7890'),
+            const SizedBox(height: 16),
+            const Text('John Doe'),
+            const SizedBox(height: 8),
+            const Text('Software Engineer'),
+            const SizedBox(height: 8),
+            const Text('Location: New York, USA'),
+            const SizedBox(height: 8),
+            const Text('Email: johndoe@example.com'),
+            const SizedBox(height: 8),
+            const Text('Phone: +1 123-456-7890'),
           ],
         ),
       ),
@@ -27,7 +27,7 @@ class ProfileScreen extends StatelessWidget {
         onPressed: () {
           // Add code to navigate to edit profile screen
         },
-        child: Icon(Icons.edit),
+        child: const Icon(Icons.edit),
       ),
     );
   }

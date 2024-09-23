@@ -33,26 +33,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _passwordController.dispose();
     super.dispose();
   }
-
-  Future<void> _registerUser() async {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-
-      // 1. Controller'lardan ma'lumotlarni olish
-      String lastName = _lastNameController.text;
-      String firstName = _firstNameController.text;
-      String email = _emailController.text;
-      String password = _passwordController.text;
-
-      context.read<AuthBloc>().add(RegisterUserEvent(
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-            password: password,
-            // ... boshqa ma'lumotlar
-          ));
-    }
-  }
+  //
+  // Future<void> _registerUser() async {
+  //   if (_formKey.currentState!.validate()) {
+  //     _formKey.currentState!.save();
+  //
+  //     // 1. Controller'lardan ma'lumotlarni olish
+  //     String lastName = _lastNameController.text;
+  //     String firstName = _firstNameController.text;
+  //     String email = _emailController.text;
+  //     String password = _passwordController.text;
+  //
+  //     context.read<AuthBloc>().add(RegisterUserEvent(
+  //           firstName: firstName,
+  //           lastName: lastName,
+  //           email: email,
+  //           password: password,
+  //           // ... boshqa ma'lumotlar
+  //         ));
+  //   }
+  // }
 
   Future<void> _getTokenAndNavigate(
       BuildContext context, UserModel user, String token) async {
@@ -306,11 +306,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   // ),
                   GestureDetector(
                     onTap: () {
-                      _registerUser();
+                      // _registerUser();
                     },
                     child: Container(
                       width: double.infinity,
-                      padding: EdgeInsets.symmetric(
+                      padding: const EdgeInsets.symmetric(
                         vertical: 16.0,
                       ),
                       decoration: BoxDecoration(
@@ -319,7 +319,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       alignment: Alignment.center,
                       child: state is AuthLoading
-                          ? CupertinoActivityIndicator(
+                          ? const CupertinoActivityIndicator(
                               color: Colors.white,
                               radius: 12.0,
                             )

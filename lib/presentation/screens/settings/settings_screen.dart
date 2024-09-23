@@ -9,14 +9,14 @@ class SettingsScreen extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
-            Text('Version: 1.0.0'),
-            SizedBox(height: 16),
+            const Text('Version: 1.0.0'),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
                 // Implement action for resetting app settings
                 print('Resetting app settings...');
               },
-              child: Text('Reset App Settings'),
+              child: const Text('Reset App Settings'),
             ),
           ],
         ),
@@ -26,7 +26,7 @@ class SettingsScreen extends StatelessWidget {
           // Implement action for saving settings
           print('Saving settings...');
         },
-        child: Icon(Icons.save),
+        child: const Icon(Icons.save),
       ),
     );
   }

@@ -55,7 +55,7 @@ class ThemeWidget extends StatelessWidget {
                             isDarkMode ? Iconsax.sun_1 : Iconsax.sun_15,
                             color: isDarkMode ? Colors.white : Colors.amber,
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Text('Light',
                               style: Theme.of(context).textTheme.bodyMedium),
                         ],
@@ -85,7 +85,7 @@ class ThemeWidget extends StatelessWidget {
                             isDarkMode ? Iconsax.moon5 : Iconsax.moon,
                             color: isDarkMode ? Colors.grey[700] : Colors.black,
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Text(
                             'Dark',
                             style: Theme.of(context)

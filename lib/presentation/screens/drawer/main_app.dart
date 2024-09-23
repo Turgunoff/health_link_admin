@@ -95,7 +95,8 @@ class _MainAppState extends State<MainApp> {
 
   @override
   Widget build(BuildContext context) {
-    var container;
+    Widget container =
+        Container(); // Bo'sh Container bilan boshlang'ich qiymat berish
 
     if (currentPage == DrawerSections.home) {
       container = const HomeScreen();
@@ -146,7 +147,7 @@ class _MainAppState extends State<MainApp> {
               Column(
                 children: [
                   HeaderDrawer(widget: widget),
-                  Divider(
+                  const Divider(
                     thickness: 1,
                     endIndent: 15,
                     indent: 15,

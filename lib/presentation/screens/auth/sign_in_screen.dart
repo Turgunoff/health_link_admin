@@ -12,12 +12,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 class SignInScreen extends StatefulWidget {
+  const SignInScreen({super.key});
+
   @override
-  _SignInScreenState createState() => _SignInScreenState();
+  State<SignInScreen> createState() => _SignInScreenState();
 }
 
 class _SignInScreenState extends State<SignInScreen> {
+  final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   bool _emailExists = false;
   String? _userRole;
   bool _showPasswordField = false;
@@ -28,44 +32,42 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   void dispose() {
     _emailController.dispose();
+    _passwordController.dispose();
     _timer?.cancel();
+    _formKey.currentState?.dispose();
     super.dispose();
   }
 
   // Email tekshirish funksiyasi
   Future<void> _checkEmailExists() async {
-    final email = _emailController.text.trim();
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      final email = _emailController.text.trim();
 
-    if (email.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Emailni kiriting')),
-      );
-      return;
-    }
+      try {
+        final response = await http.get(
+          Uri.parse('http://77.232.132.99:47608/check_email?email=$email'),
+        );
 
-    try {
-      final response = await http.get(
-        Uri.parse('http://77.232.132.99:47608/check_email?email=$email'),
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        setState(() {
-          _emailExists = data['exists'];
-          _userRole = data['role'];
-          if (_emailExists && _userRole == 'client') {
-            _showClientAlert();
-          } else if (_emailExists && _userRole == 'doctor') {
-            _showPasswordField = true;
-          } else {
-            _showConfirmationCodeDialog();
-          }
-        });
-      } else {
-        print('Xatolik yuz berdi: ${response.statusCode}');
+        if (response.statusCode == 200) {
+          final data = jsonDecode(response.body);
+          setState(() {
+            _emailExists = data['exists'];
+            _userRole = data['role'];
+            if (_emailExists && _userRole == 'client') {
+              _showClientAlert();
+            } else if (_emailExists && _userRole == 'doctor') {
+              _showPasswordField = true;
+            } else {
+              _showConfirmationCodeDialog();
+            }
+          });
+        } else {
+          print('Xatolik yuz berdi: ${response.statusCode}');
+        }
+      } catch (e) {
+        print('Xatolik yuz berdi: $e');
       }
-    } catch (e) {
-      print('Xatolik yuz berdi: $e');
     }
   }
 
@@ -79,46 +81,42 @@ class _SignInScreenState extends State<SignInScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Tasdiqlash kodini kiriting'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                decoration:
-                    InputDecoration(hintText: 'Tasdiqlash kodini kiriting'),
-              ),
-              SizedBox(height: 16),
-              Text('$_timerSeconds soniya'),
-              if (_timerSeconds == 0)
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      _timerSeconds = 60;
-                      _startTimer();
-                    });
-                  },
-                  child: Text('Qayta yuborish'),
-                ),
-            ],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(
+                15.0), // Dialogning burchaklarini yumaloqlash
           ),
-          actions: [
+          title: const Icon(Icons.check_circle_outline,
+              size: 60, color: Colors.green), // Yuqori qismdagi icon
+          content: const Text('Emailingizga tasdiqlash kodi yuborildi.'),
+          actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(); // Dialogni yopish
               },
-              child: Text('Tasdiqlash'),
+              child: const Text('OK'),
             ),
           ],
         );
       },
     );
-
     _startTimer();
+  }
+
+  void _recentConfirmCode() {
+    // // Tasdiqlash kodini yuborish funksiyasi
+    // _showConfirmationCodeDialog();
+    setState(() {
+      _timerSeconds = 60; // Timerni qayta 60 sekundga o'rnatish
+      _startTimer(); // Timerni qayta ishga tushirish
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Tasdiqlash kodi qayta yuborildi')),
+    );
   }
 
   // 60 soniyalik taymer funksiyasi
   void _startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         if (_timerSeconds > 0) {
           _timerSeconds--;
@@ -135,15 +133,15 @@ class _SignInScreenState extends State<SignInScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Ro\'yxatdan o\'tilgan'),
-          content: Text(
+          title: const Text('Ro\'yxatdan o\'tilgan'),
+          content: const Text(
               'Bu email mijoz sifatida ro\'yxatdan o\'tgan, boshqa emailni kiriting.'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );
@@ -151,53 +149,265 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
+
+  Future<void> _handleButtonPress() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+
+      String email = _emailController.text;
+      String passwordOrCode = _passwordController.text;
+
+      if (_emailExists && _userRole == 'doctor') {
+        // Login with password
+        context
+            .read<AuthBloc>()
+            .add(LoginUserEvent(email: email, password: passwordOrCode));
+      } else {
+        // Emailni tekshirish
+        _checkEmailExists();
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Kirish ekrani')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(hintText: 'Emailni kiriting'),
-              onChanged: (value) {
-                setState(() {
-                  // Har qanday o'zgarishda parol va tasdiqlash kodini yashirish
-                  _showPasswordField = false;
-                  _isCodeFieldVisible = false;
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthSuccess) {
+          // Login successful, navigate to MainApp
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    MainApp(user: state.user, token: state.token)),
+          );
+        } else if (state is AuthFailure) {
+          // Login failed, show error message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.error)),
+          );
+        }
+      },
+      builder: (context, state) {
+        return Scaffold(
+          backgroundColor: const Color(0xFFEDF2F7),
+          resizeToAvoidBottomInset: false,
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
+                        hintText: 'Emailni kiriting',
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            width: 0,
+                            color: Colors.white,
+                          ),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              width: 0,
+                              color: Colors.white,
+                            ),
+                            borderRadius: BorderRadius.circular(8.0)),
+                        hintStyle: Theme.of(context)
+                            .textTheme
+                            .bodyMedium!
+                            .copyWith(color: Colors.grey),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: const BorderSide(
+                            width: 0,
+                            color: Colors.white,
+                          ),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            width: 1.0,
+                            style: BorderStyle.solid,
+                            color: Colors.red,
+                          ),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Iltimos, emailingizni kiriting';
+                        }
+                        // Email formatini tekshirish uchun qo'shimcha validatsiya qo'shishingiz mumkin
+                        if (!RegExp(
+                                r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                            .hasMatch(value)) {
+                          return 'Iltimos, to\'g\'ri email kiriting';
+                        }
+                        return null;
+                      },
+                      onChanged: (value) {
+                        setState(() {
+                          // Har qanday o'zgarishda parol va tasdiqlash kodini yashirish
+                          _showPasswordField = false;
+                          _isCodeFieldVisible = false;
 
-                  // Tugmani holatini yangilash
-                  _emailExists = false;
-                  _timer?.cancel(); // Taymerni bekor qilish
-                });
-              },
-            ),
-            if (_showPasswordField)
-              TextField(
-                obscureText: true,
-                decoration: InputDecoration(hintText: 'Parolni kiriting'),
+                          // Tugmani holatini yangilash
+                          _emailExists = false;
+                          _timer?.cancel(); // Taymerni bekor qilish
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    if (_showPasswordField)
+                      TextFormField(
+                        controller: _passwordController,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          fillColor: Colors.white,
+                          filled: true,
+                          hintText: 'Parolni kiriting',
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              width: 0,
+                              color: Colors.white,
+                            ),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                width: 0,
+                                color: Colors.white,
+                              ),
+                              borderRadius: BorderRadius.circular(8.0)),
+                          hintStyle: Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .copyWith(color: Colors.grey),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: const BorderSide(
+                              width: 0,
+                              color: Colors.white,
+                            ),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                              color: Colors.red,
+                            ),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Parolni kiriting';
+                          }
+                          return null;
+                        },
+                      ),
+                    if (_isCodeFieldVisible)
+                      Column(
+                        children: [
+                          TextField(
+                            decoration: InputDecoration(
+                              fillColor: Colors.white,
+                              filled: true,
+                              hintText: 'Tasdiqlash kodini kiriting',
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  width: 0,
+                                  color: Colors.white,
+                                ),
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    width: 0,
+                                    color: Colors.white,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8.0)),
+                              hintStyle: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(color: Colors.grey),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                                borderSide: const BorderSide(
+                                  width: 0,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  width: 1.0,
+                                  style: BorderStyle.solid,
+                                  color: Colors.red,
+                                ),
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                if (_timerSeconds > 0)
+                                  Text(
+                                    textAlign: TextAlign.center,
+                                    'Kod sizning Email pochtangizga yuborildi. $_timerSeconds soniyadan keyin qayta yuborish mumkin.',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall!
+                                        .copyWith(
+                                          color: Colors.black,
+                                          height: 1,
+                                        ),
+                                  ),
+                                if (_timerSeconds == 0)
+                                  TextButton(
+                                    onPressed: () {
+                                      _recentConfirmCode();
+                                    },
+                                    child: Text(
+                                      'Qayta yuborish',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall!
+                                          .copyWith(
+                                              color: Theme.of(context)
+                                                  .primaryColor),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: state is AuthLoading ? null : _handleButtonPress,
+                      child: state is AuthLoading
+                          ? const CircularProgressIndicator()
+                          : Text(_emailExists && _userRole == 'doctor' ? 'Kirish' : 'Tekshirish'), // Tugma matnini o'zgartirish
+                    ),
+                  ],
+                ),
               ),
-            if (_isCodeFieldVisible)
-              Column(
-                children: [
-                  TextField(
-                    decoration:
-                        InputDecoration(hintText: 'Tasdiqlash kodini kiriting'),
-                  ),
-                  SizedBox(height: 8),
-                  Text('$_timerSeconds soniya'),
-                ],
-              ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _checkEmailExists,
-              child: Text(_emailExists ? 'Kirish' : 'Ro\'yxatdan o\'tish'),
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
@@ -227,11 +437,9 @@ class _SignInScreenState extends State<SignInScreen> {
 //     super.dispose();
 //   }
 
- 
-
 //   Future<void> _checkEmailExists() async {
 //     if (_formKey.currentState!.validate()) {
-//       _formKey.currentState!.save();
+// _formKey.currentState!.save();
 
 //       String email = _emailController.text;
 
@@ -271,7 +479,6 @@ class _SignInScreenState extends State<SignInScreen> {
 //       }
 //     }
 //   }
-
 
 //   @override
 //   Widget build(BuildContext context) {
@@ -437,57 +644,55 @@ class _SignInScreenState extends State<SignInScreen> {
 //   }
 // }
 
+// Future<void> _handleButtonPress() async {
+//   if (_formKey.currentState!.validate()) {
+//     _formKey.currentState!.save();
 
+//     String email = _emailController.text;
+//     String passwordOrCode = _passwordController.text;
 
-  // Future<void> _handleButtonPress() async {
-  //   if (_formKey.currentState!.validate()) {
-  //     _formKey.currentState!.save();
+//     if (_emailExists) {
+//       // Login with password
+//       context
+//           .read<AuthBloc>()
+//           .add(LoginUserEvent(email: email, password: passwordOrCode));
+//     } else {
+//       // Ro'yxatdan o'tkazish (bu yerda siz o'zingizning ro'yxatdan o'tkazish logikasini amalga oshirishingiz kerak)
+//       // Masalan, tasdiqlash kodini yuborish yoki to'g'ridan-to'g'ri ro'yxatdan o'tkazish
+//       print('Ro\'yxatdan o\'tkazish: $email');
+//     }
+//   }
+// }
+// Future<void> _loginUser() async {
+//   if (_formKey.currentState!.validate()) {
+//     _formKey.currentState!.save();
 
-  //     String email = _emailController.text;
-  //     String passwordOrCode = _passwordController.text;
+//     String email = _emailController.text;
+//     String password = _passwordController.text;
 
-  //     if (_emailExists) {
-  //       // Login with password
-  //       context
-  //           .read<AuthBloc>()
-  //           .add(LoginUserEvent(email: email, password: passwordOrCode));
-  //     } else {
-  //       // Ro'yxatdan o'tkazish (bu yerda siz o'zingizning ro'yxatdan o'tkazish logikasini amalga oshirishingiz kerak)
-  //       // Masalan, tasdiqlash kodini yuborish yoki to'g'ridan-to'g'ri ro'yxatdan o'tkazish
-  //       print('Ro\'yxatdan o\'tkazish: $email');
-  //     }
-  //   }
-  // }
-   // Future<void> _loginUser() async {
-  //   if (_formKey.currentState!.validate()) {
-  //     _formKey.currentState!.save();
+//     // Trigger the login event in the AuthBloc
+//     context
+//         .read<AuthBloc>()
+//         .add(LoginUserEvent(email: email, password: password));
+//   }
+// }
 
-  //     String email = _emailController.text;
-  //     String password = _passwordController.text;
+// Future<void> _loginUser() async {
+//   if (_formKey.currentState!.validate()) {
+//     _formKey.currentState!.save();
 
-  //     // Trigger the login event in the AuthBloc
-  //     context
-  //         .read<AuthBloc>()
-  //         .add(LoginUserEvent(email: email, password: password));
-  //   }
-  // }
+//     String email = _emailController.text;
+//     String passwordOrCode = _passwordController.text;
 
-  // Future<void> _loginUser() async {
-  //   if (_formKey.currentState!.validate()) {
-  //     _formKey.currentState!.save();
-
-  //     String email = _emailController.text;
-  //     String passwordOrCode = _passwordController.text;
-
-  //     if (_showPassword) {
-  //       // Login with password
-  //       context
-  //           .read<AuthBloc>()
-  //           .add(LoginUserEvent(email: email, password: passwordOrCode));
-  //     } else {
-  //       // Verify email with code
-  //       // Bu qismni o'zingizning tasdiqlash kodi mantiqingizga moslashtiring
-  //       print('Emailni tasdiqlash: $email, Kod: $passwordOrCode');
-  //     }
-  //   }
-  // }
+//     if (_showPassword) {
+//       // Login with password
+//       context
+//           .read<AuthBloc>()
+//           .add(LoginUserEvent(email: email, password: passwordOrCode));
+//     } else {
+//       // Verify email with code
+//       // Bu qismni o'zingizning tasdiqlash kodi mantiqingizga moslashtiring
+//       print('Emailni tasdiqlash: $email, Kod: $passwordOrCode');
+//     }
+//   }
+// }

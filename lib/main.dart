@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import 'package:health_link_admin/presentation/screens/auth/logic/bloc/auth_bloc.dart';
 import 'package:health_link_admin/presentation/screens/splash/splash_screen.dart';
 import 'package:health_link_admin/theme/bloc/theme_bloc.dart';
 import 'package:health_link_admin/theme/theme.dart';
-import 'package:http/http.dart' as http;
-
-import 'data/api/api_constants.dart';
 
 // final getIt = GetIt.instance;
 // void setupLocator() {

@@ -6,14 +6,14 @@ class PatientsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
+      body: const Center(
         child: Text('Patient Records'),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // Implement add patient functionality here
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }

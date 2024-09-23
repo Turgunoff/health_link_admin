@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:health_link_admin/data/models/user_model.dart';
 import 'package:health_link_admin/presentation/screens/auth/sign_in_screen.dart';
-import 'package:health_link_admin/presentation/screens/auth/sign_up_screen.dart';
 import 'package:health_link_admin/presentation/screens/drawer/main_app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

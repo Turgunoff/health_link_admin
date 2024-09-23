@@ -9,12 +9,12 @@ class AppointmentsScreen extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
-            Text('Your appointments'),
+            const Text('Your appointments'),
             ElevatedButton(
               onPressed: () {
                 // Navigate to the AddAppointmentScreen
               },
-              child: Text('Add Appointment'),
+              child: const Text('Add Appointment'),
             ),
             // Add more appointments as needed
             //...
